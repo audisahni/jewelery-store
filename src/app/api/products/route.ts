@@ -6,7 +6,6 @@ import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
 
-export const runtime = "edge";
 
 const productSchema = z.object({
   name: z.string().min(1),

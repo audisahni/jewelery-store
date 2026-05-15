@@ -6,7 +6,6 @@ import { orders } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { sendEmail } from "@/lib/email";
 
-export const runtime = "edge";
 
 export async function POST(req: Request) {
   const body = await req.text();

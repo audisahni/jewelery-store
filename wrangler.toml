@@ -11,7 +11,9 @@ binding = "ASSETS"
 binding = "DB"
 database_name = "jewelry-store-db"
 database_id = "f322a821-758e-4524-aceb-57646d29eb2a"
+remote = true
 
 [[r2_buckets]]
 binding = "R2"
 bucket_name = "jewelry-store-assets"
+remote = true

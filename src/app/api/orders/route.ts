@@ -6,7 +6,6 @@ import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
 
-export const runtime = "edge";
 
 const createOrderSchema = z.object({
   stripePaymentIntentId: z.string(),
