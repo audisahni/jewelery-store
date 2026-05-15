@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-cormorant);
+  --font-body: var(--font-dm-sans);
+  --font-accent: var(--font-jost);
+  
+  --color-background: #FAFAF8;
+  --color-foreground: #1A1A18;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1A1A18;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #1A1A18;
+  --color-primary: #C9A84C;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #F7F3EE;
+  --color-secondary-foreground: #1A1A18;
+  --color-muted: #8C8880;
+  --color-muted-foreground: #8C8880;
+  --color-accent: #F7F3EE;
+  --color-accent-foreground: #1A1A18;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #C9A84C;
+  
+  --radius: 0.5rem;
+}
+
+@layer base {
+  :root {
+    --background: 60 20% 98%;
+    --foreground: 60 5% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 60 5% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 60 5% 10%;
+    --primary: 44 54% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 35 33% 95%;
+    --secondary-foreground: 60 5% 10%;
+    --muted: 40 5% 53%;
+    --muted-foreground: 40 5% 53%;
+    --accent: 35 33% 95%;
+    --accent-foreground: 60 5% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 44 54% 54%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+  .accent-text {
+    @apply font-accent uppercase tracking-widest text-sm;
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes scrollIndicator {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(0.6); }
+}
+
+.product-card {
+  transition: transform 400ms ease;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+}

@@ -1,0 +1,17 @@
+name = "jewelry-store"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jewelry-store-db"
+database_id = "f322a821-758e-4524-aceb-57646d29eb2a"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "jewelry-store-assets"
