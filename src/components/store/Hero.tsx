@@ -5,7 +5,6 @@ interface HeroProps {
   subheading?: string;
   ctaText?: string;
   ctaHref?: string;
-  announcementText?: string;
 }
 
 export default function Hero({
@@ -13,29 +12,9 @@ export default function Hero({
   subheading = "Handcrafted artisan jewelry rooted in India's rich cultural heritage — each piece designed and made by Gurleen in New Delhi.",
   ctaText = "View Collection",
   ctaHref = "/shop",
-  announcementText = "Handcrafted in New Delhi  ·  Designed by Gurleen  ·  15 Years of Artisan Excellence  ·  Enquiries Welcome",
 }: HeroProps) {
-  const repeatedText = Array(6).fill(announcementText).join("    ·    ");
-
   return (
     <section className="relative min-h-screen flex flex-col">
-      {/* Announcement bar */}
-      <div className="bg-foreground text-background overflow-hidden shrink-0">
-        <div className="flex py-2.5">
-          <div
-            className="flex shrink-0 whitespace-nowrap"
-            style={{ animation: "marquee 30s linear infinite" }}
-          >
-            <span className="font-accent text-[10px] tracking-[0.2em] uppercase px-8">
-              {repeatedText}
-            </span>
-            <span className="font-accent text-[10px] tracking-[0.2em] uppercase px-8" aria-hidden>
-              {repeatedText}
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Hero content */}
       <div className="flex-1 flex items-center justify-center bg-secondary relative overflow-hidden px-6">
         <div
