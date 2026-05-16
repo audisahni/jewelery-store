@@ -25,12 +25,21 @@ export default function AdminOrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
+  const pendingCount = orders.filter((o) => o.status === "pending").length;
+  const paidCount = orders.filter((o) => o.status === "paid").length;
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl text-foreground">Orders</h1>
         <p className="font-body text-sm text-muted mt-1">
-          {loading ? "Loading..." : `${orders.length} total orders`}
+          {loading
+            ? "Loading orders..."
+            : orders.length === 0
+            ? "No orders yet — they'll appear here as customers check out"
+            : `${orders.length} total order${orders.length !== 1 ? "s" : ""}${
+                pendingCount > 0 ? ` · ${pendingCount} pending` : ""
+              }${paidCount > 0 ? ` · ${paidCount} ready to ship` : ""}`}
         </p>
       </div>
 

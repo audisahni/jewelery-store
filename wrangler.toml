@@ -7,6 +7,11 @@ main = ".open-next/worker.js"
 directory = ".open-next/assets"
 binding = "ASSETS"
 
+[vars]
+ADMIN_EMAIL = "admin@example.com"
+FROM_EMAIL = "onboarding@resend.dev"
+R2_BUCKET_NAME = "jewelry-store-assets"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "jewelry-store-db"

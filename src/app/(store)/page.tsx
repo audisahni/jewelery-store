@@ -2,6 +2,7 @@ import Hero from "@/components/store/Hero";
 import ProductCard from "@/components/store/ProductCard";
 import Link from "next/link";
 import Image from "next/image";
+import { getProducts } from "@/lib/data";
 
 const CATEGORIES = [
   { name: "Rings", slug: "rings", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80" },
@@ -11,17 +12,7 @@ const CATEGORIES = [
 ];
 
 async function getFeaturedProducts() {
-  try {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/products?featured=true`, {
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return getProducts({ featured: true, activeOnly: true });
 }
 
 function NewsletterSection() {

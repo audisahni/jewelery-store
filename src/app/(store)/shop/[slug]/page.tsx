@@ -2,29 +2,16 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/store/ProductDetail";
 import ProductCard from "@/components/store/ProductCard";
+import { getProducts } from "@/lib/data";
 
 async function getProduct(slug: string) {
-  try {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/products?slug=${slug}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const products = await res.json();
-    return products[0] || null;
-  } catch {
-    return null;
-  }
+  const results = await getProducts({ slug, activeOnly: false });
+  return results[0] ?? null;
 }
 
 async function getRelatedProducts(category: string, excludeId: string) {
-  try {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/products?category=${category}`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const products = await res.json();
-    return products.filter((p: any) => p.id !== excludeId).slice(0, 4);
-  } catch {
-    return [];
-  }
+  const results = await getProducts({ category, activeOnly: true });
+  return results.filter((p) => p.id !== excludeId).slice(0, 4);
 }
 
 export async function generateMetadata({

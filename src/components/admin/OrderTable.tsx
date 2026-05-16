@@ -34,6 +34,14 @@ const STATUS_COLORS: Record<string, string> = {
 
 const ALL_STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled"];
 
+const STATUS_LABELS: Record<string, { label: string; hint: string }> = {
+  pending:   { label: "Pending",   hint: "Payment not yet confirmed" },
+  paid:      { label: "Paid",      hint: "Payment received, ready to ship" },
+  shipped:   { label: "Shipped",   hint: "Package sent, in transit" },
+  delivered: { label: "Delivered", hint: "Customer received the order" },
+  cancelled: { label: "Cancelled", hint: "Order was cancelled" },
+};
+
 interface OrderTableProps {
   orders: Order[];
   onRefresh: () => void;
@@ -200,7 +208,7 @@ export default function OrderTable({ orders, onRefresh }: OrderTableProps) {
             <SelectItem value="all">All statuses</SelectItem>
             {ALL_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+                {STATUS_LABELS[s]?.label ?? s}
               </SelectItem>
             ))}
           </SelectContent>
@@ -243,7 +251,16 @@ export default function OrderTable({ orders, onRefresh }: OrderTableProps) {
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-16">
                   <ShoppingCart size={32} className="mx-auto mb-3 text-muted" />
-                  <p className="text-muted font-body">No orders found.</p>
+                  <p className="text-foreground font-body font-medium mb-1">
+                    {search || statusFilter !== "all" || dateFrom || dateTo
+                      ? "No orders match your filters"
+                      : "No orders yet"}
+                  </p>
+                  <p className="text-muted font-body text-sm max-w-xs mx-auto">
+                    {search || statusFilter !== "all" || dateFrom || dateTo
+                      ? "Try adjusting your search or filter criteria."
+                      : "When a customer completes a purchase, their order will appear here automatically."}
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -380,7 +397,10 @@ export default function OrderTable({ orders, onRefresh }: OrderTableProps) {
                                     <SelectContent>
                                       {ALL_STATUSES.map((s) => (
                                         <SelectItem key={s} value={s}>
-                                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                                          <span className="flex flex-col">
+                                            <span>{STATUS_LABELS[s]?.label ?? s}</span>
+                                            <span className="text-xs text-muted font-normal">{STATUS_LABELS[s]?.hint}</span>
+                                          </span>
                                         </SelectItem>
                                       ))}
                                     </SelectContent>

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import ProductGrid from "@/components/store/ProductGrid";
+import { getProducts } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Shop Fine Jewelry | Lumière",
@@ -13,15 +14,7 @@ export default async function ShopPage({
 }) {
   const params = await searchParams;
 
-  // Fetch initial products server-side
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  let products = [];
-  try {
-    const url = new URL(`${baseUrl}/api/products`);
-    if (params.category) url.searchParams.set("category", params.category);
-    const res = await fetch(url.toString(), { cache: "no-store" });
-    if (res.ok) products = await res.json();
-  } catch {}
+  const products = await getProducts({ category: params.category, activeOnly: true });
 
   const categoryLabel = params.category
     ? params.category.charAt(0).toUpperCase() + params.category.slice(1)

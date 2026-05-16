@@ -20,7 +20,7 @@ const navItems = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ userEmail }: { userEmail: string }) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -78,6 +78,11 @@ export default function Sidebar() {
             </Link>
           </div>
         </nav>
+
+        {/* User */}
+        <div className="px-4 py-3 border-b border-background/10">
+          <p className="text-xs font-body text-background/50 truncate">{userEmail}</p>
+        </div>
 
         {/* Sign Out */}
         <div className="px-3 py-4 border-t border-background/10">
