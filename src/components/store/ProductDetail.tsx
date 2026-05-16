@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Minus, Plus, MessageCircle, Mail } from "lucide-react";
 import { Product } from "@/types";
 import { useCart } from "@/hooks/useCart";
+import { useEcommerce } from "@/contexts/EcommerceContext";
 import { formatPrice, cn } from "@/lib/utils";
 import ProductCard from "@/components/store/ProductCard";
 
@@ -13,7 +14,7 @@ type Tab = "description" | "materials" | "shipping";
 const TABS: { id: Tab; label: string }[] = [
   { id: "description", label: "Description" },
   { id: "materials", label: "Materials & Care" },
-  { id: "shipping", label: "Shipping" },
+  { id: "shipping", label: "Delivery" },
 ];
 
 interface LightboxProps {
@@ -41,7 +42,6 @@ function Lightbox({ images, initialIndex, name, onClose }: LightboxProps) {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center" onClick={onClose}>
-      {/* Close */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
@@ -50,7 +50,6 @@ function Lightbox({ images, initialIndex, name, onClose }: LightboxProps) {
         <X size={24} />
       </button>
 
-      {/* Prev */}
       {images.length > 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); prev(); }}
@@ -61,7 +60,6 @@ function Lightbox({ images, initialIndex, name, onClose }: LightboxProps) {
         </button>
       )}
 
-      {/* Image */}
       <div
         className="relative w-full max-w-3xl mx-16 aspect-square"
         onClick={(e) => e.stopPropagation()}
@@ -75,7 +73,6 @@ function Lightbox({ images, initialIndex, name, onClose }: LightboxProps) {
         />
       </div>
 
-      {/* Next */}
       {images.length > 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); next(); }}
@@ -86,7 +83,6 @@ function Lightbox({ images, initialIndex, name, onClose }: LightboxProps) {
         </button>
       )}
 
-      {/* Counter */}
       {images.length > 1 && (
         <p className="absolute bottom-4 left-1/2 -translate-x-1/2 font-accent text-[10px] tracking-widest uppercase text-white/50">
           {index + 1} / {images.length}
@@ -102,6 +98,8 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product, relatedProducts = [] }: ProductDetailProps) {
+  const { enabled: ecommerceEnabled, whatsappNumber } = useEcommerce();
+
   const images = Array.isArray(product.images) ? (product.images as string[]) : [];
   const allImages: string[] = [];
   if (product.primaryImage) allImages.push(product.primaryImage);
@@ -147,7 +145,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
       ? "Out of Stock"
       : product.stock <= 3
       ? `Only ${product.stock} left`
-      : "In Stock";
+      : "Available";
 
   const stockColor =
     product.stock === 0
@@ -155,6 +153,13 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
       : product.stock !== null && product.stock <= 3
       ? "text-primary"
       : "text-foreground/60";
+
+  const whatsappMessage = encodeURIComponent(
+    `Namaste! I came across "${product.name}" on EZMAY By Gurleen and I'm interested in learning more. Could you please share details about availability and pricing?`
+  );
+  const whatsappLink = whatsappNumber
+    ? `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${whatsappMessage}`
+    : null;
 
   return (
     <>
@@ -169,7 +174,6 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
             >
               {allImages.length > 0 ? (
                 <>
-                  {/* Current image */}
                   <Image
                     key={mainIndex}
                     src={allImages[mainIndex]}
@@ -177,12 +181,8 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     priority
-                    className={cn(
-                      "object-cover transition-opacity duration-500",
-                      prevIndex !== null ? "opacity-100" : "opacity-100"
-                    )}
+                    className="object-cover transition-opacity duration-500"
                   />
-                  {/* Crossfading previous image */}
                   {prevIndex !== null && (
                     <Image
                       src={allImages[prevIndex]}
@@ -228,7 +228,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
             )}
           </div>
 
-          {/* Right — product info (sticky on desktop) */}
+          {/* Right — product info */}
           <div className="lg:sticky lg:top-24 lg:self-start flex flex-col gap-8">
             {/* Eyebrow + name */}
             <div className="flex flex-col gap-3">
@@ -276,48 +276,75 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
               </p>
             )}
 
-            {/* Quantity + add to cart */}
+            {/* CTA — e-commerce on: Add to Cart | e-commerce off: Enquire */}
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-4">
-                {/* Quantity selector */}
-                <div className="flex items-center border border-border">
+              {ecommerceEnabled ? (
+                <div className="flex items-center gap-4">
+                  {/* Quantity selector */}
+                  <div className="flex items-center border border-border">
+                    <button
+                      onClick={decrement}
+                      disabled={quantity <= 1 || isOutOfStock}
+                      aria-label="Decrease quantity"
+                      className="px-4 py-3 text-foreground hover:bg-secondary transition-colors disabled:opacity-30"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="px-5 py-3 font-body text-sm font-medium w-12 text-center tabular-nums">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={increment}
+                      disabled={quantity >= maxStock || isOutOfStock}
+                      aria-label="Increase quantity"
+                      className="px-4 py-3 text-foreground hover:bg-secondary transition-colors disabled:opacity-30"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+
                   <button
-                    onClick={decrement}
-                    disabled={quantity <= 1 || isOutOfStock}
-                    aria-label="Decrease quantity"
-                    className="px-4 py-3 text-foreground hover:bg-secondary transition-colors disabled:opacity-30"
+                    onClick={handleAddToCart}
+                    disabled={isOutOfStock}
+                    className={cn(
+                      "flex-1 py-3.5 font-accent text-xs tracking-[0.2em] uppercase transition-colors duration-300",
+                      isOutOfStock
+                        ? "bg-muted/20 text-muted cursor-not-allowed"
+                        : addedFeedback
+                        ? "bg-primary text-white"
+                        : "bg-foreground text-background hover:bg-primary"
+                    )}
                   >
-                    <Minus size={14} />
-                  </button>
-                  <span className="px-5 py-3 font-body text-sm font-medium w-12 text-center tabular-nums">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={increment}
-                    disabled={quantity >= maxStock || isOutOfStock}
-                    aria-label="Increase quantity"
-                    className="px-4 py-3 text-foreground hover:bg-secondary transition-colors disabled:opacity-30"
-                  >
-                    <Plus size={14} />
+                    {isOutOfStock ? "Out of Stock" : addedFeedback ? "Added to Cart" : "Add to Cart"}
                   </button>
                 </div>
-
-                {/* Add to cart */}
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isOutOfStock}
-                  className={cn(
-                    "flex-1 py-3.5 font-accent text-xs tracking-[0.2em] uppercase transition-colors duration-300",
-                    isOutOfStock
-                      ? "bg-muted/20 text-muted cursor-not-allowed"
-                      : addedFeedback
-                      ? "bg-primary text-white"
-                      : "bg-foreground text-background hover:bg-primary"
+              ) : (
+                /* Enquiry mode — e-commerce not yet enabled */
+                <div className="flex flex-col gap-3">
+                  {whatsappLink ? (
+                    <a
+                      href={whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#25D366] text-white font-accent text-xs tracking-[0.2em] uppercase hover:bg-[#20b958] transition-colors duration-300"
+                    >
+                      <MessageCircle size={16} />
+                      Enquire on WhatsApp
+                    </a>
+                  ) : (
+                    <a
+                      href={`mailto:?subject=Enquiry about ${encodeURIComponent(product.name)} — EZMAY By Gurleen&body=${encodeURIComponent(`Hello,\n\nI am interested in "${product.name}" from EZMAY By Gurleen. Could you please share more details?\n\nThank you.`)}`}
+                      className="flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background font-accent text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors duration-300"
+                    >
+                      <Mail size={16} />
+                      Send Enquiry
+                    </a>
                   )}
-                >
-                  {isOutOfStock ? "Out of Stock" : addedFeedback ? "Added to Cart" : "Add to Cart"}
-                </button>
-              </div>
+                  <p className="font-body text-xs text-muted text-center">
+                    Online shopping coming soon — enquire to learn more about this piece
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Divider */}
@@ -355,27 +382,33 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                       </p>
                     )}
                     <p>
-                      All our pieces are crafted from ethically sourced materials and finished
-                      by hand. To maintain the beauty of your jewelry, avoid contact with
-                      perfume, lotions, and water. Store in the provided pouch or a soft cloth
+                      Each EZMAY piece is handcrafted using traditional Indian techniques and
+                      ethically sourced materials. To preserve your jewelry, keep it away from
+                      perfume, water, and direct sunlight. Store in the provided cloth pouch
                       when not in use.
                     </p>
                   </div>
                 )}
                 {tab === "shipping" && (
                   <div className="flex flex-col gap-3">
-                    <p>
-                      <strong className="text-foreground font-medium">Standard:</strong>{" "}
-                      3–5 business days — Free on orders over $500
-                    </p>
-                    <p>
-                      <strong className="text-foreground font-medium">Express:</strong>{" "}
-                      1–2 business days — $15
-                    </p>
-                    <p>
-                      All orders ship in our signature gift packaging. Returns accepted within
-                      30 days of delivery.
-                    </p>
+                    {ecommerceEnabled ? (
+                      <>
+                        <p>
+                          <strong className="text-foreground font-medium">Standard:</strong>{" "}
+                          5–7 business days across India — Free on orders above ₹5,000
+                        </p>
+                        <p>
+                          <strong className="text-foreground font-medium">Express:</strong>{" "}
+                          2–3 business days — ₹299
+                        </p>
+                        <p>All orders ship from New Delhi in our signature packaging. Returns accepted within 30 days.</p>
+                      </>
+                    ) : (
+                      <p>
+                        For delivery and shipping information, please enquire directly via
+                        WhatsApp or email. We deliver across India and internationally.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -394,6 +427,10 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                     <span className="text-foreground">{product.weight}g</span>
                   </div>
                 )}
+                <div className="flex gap-2">
+                  <span className="text-muted w-24 shrink-0">Origin</span>
+                  <span className="text-foreground">Handcrafted in New Delhi, India</span>
+                </div>
               </div>
             )}
           </div>

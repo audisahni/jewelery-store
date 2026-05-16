@@ -35,7 +35,7 @@ export default function Sidebar({ userEmail }: { userEmail: string }) {
         {/* Logo */}
         <div className="px-6 py-6 border-b border-background/10">
           <span className="font-display text-xl tracking-wider text-background">
-            Lumière
+            EZMAY
           </span>
           <span className="font-body text-xs text-background/50 ml-2 uppercase tracking-widest">
             Admin

@@ -8,10 +8,10 @@ interface SEOProps {
 }
 
 export function constructMetadata({
-  title = "Jewelry Store | Fine Jewelry",
-  description = "Discover our exquisite collection of fine jewelry. Handcrafted with passion and precision.",
+  title = "EZMAY By Gurleen | Handcrafted Artisan Indian Jewelry",
+  description = "Handcrafted artisan Indian jewelry designed by Gurleen — a professional jewelry designer and professor with 15 years of experience, based in New Delhi.",
   image = "/og-image.jpg",
-  url = "https://jewelrystore.com",
+  url = "https://ezmay.in",
 }: SEOProps = {}): Metadata {
   return {
     title,
@@ -32,7 +32,7 @@ export function constructMetadata({
       title,
       description,
       images: [image],
-      creator: "@jewelrystore",
+      creator: "@ezmay_bygurleen",
     },
     metadataBase: new URL(url),
   };

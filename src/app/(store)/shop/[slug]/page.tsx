@@ -26,7 +26,7 @@ export async function generateMetadata({
     return { title: "Product Not Found" };
   }
 
-  const storeName = "Lumière";
+  const storeName = "EZMAY By Gurleen";
   const title = product.metaTitle || `${product.name} | ${storeName}`;
   const description =
     product.metaDescription ||

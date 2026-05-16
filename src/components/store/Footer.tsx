@@ -7,10 +7,11 @@ const shopLinks = [
   { href: "/shop?category=necklaces", label: "Necklaces" },
   { href: "/shop?category=earrings", label: "Earrings" },
   { href: "/shop?category=bracelets", label: "Bracelets" },
+  { href: "/shop?category=bangles", label: "Bangles" },
 ];
 
 const infoLinks = [
-  { href: "/about", label: "Our Story" },
+  { href: "/about", label: "About Gurleen" },
   { href: "/care", label: "Jewelry Care" },
   { href: "/returns", label: "Returns & Exchanges" },
   { href: "/shipping", label: "Shipping Info" },
@@ -30,10 +31,16 @@ export default function Footer() {
             href="/"
             className="font-display text-xl tracking-[0.25em] uppercase text-foreground w-fit"
           >
-            Lumière
+            EZMAY
           </Link>
+          <p className="font-body text-xs text-primary tracking-wider uppercase">
+            By Gurleen
+          </p>
           <p className="font-body text-sm text-muted leading-relaxed max-w-[220px]">
-            Handcrafted fine jewelry for moments that last forever.
+            Handcrafted artisan Indian jewelry — born in New Delhi, worn with pride.
+          </p>
+          <p className="font-body text-xs text-muted">
+            New Delhi, India
           </p>
 
           {/* Social links */}
@@ -63,7 +70,7 @@ export default function Footer() {
         {/* Shop links */}
         <div className="flex flex-col gap-5">
           <p className="font-accent text-xs tracking-widest uppercase text-foreground">
-            Shop
+            Collections
           </p>
           <ul className="flex flex-col gap-3">
             {shopLinks.map((link) => (
@@ -101,11 +108,10 @@ export default function Footer() {
         {/* Newsletter */}
         <div className="flex flex-col gap-5">
           <p className="font-accent text-xs tracking-widest uppercase text-foreground">
-            Stay in Touch
+            Stay Connected
           </p>
           <p className="font-body text-sm text-muted leading-relaxed">
-            New arrivals, exclusive offers, and jewelry care tips — delivered
-            with intention.
+            Be the first to see new designs, behind-the-scenes from the studio, and exclusive pieces.
           </p>
           <NewsletterForm />
         </div>
@@ -115,12 +121,12 @@ export default function Footer() {
       <div className="border-t border-border">
         <div className="max-w-[1320px] mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="font-body text-xs text-muted">
-            © {year} Lumière. All rights reserved.
+            © {year} EZMAY By Gurleen. All rights reserved. · New Delhi, India
           </p>
 
-          {/* Payment method representations */}
+          {/* Indian payment methods */}
           <div className="flex items-center gap-3">
-            {["Visa", "Mastercard", "Amex", "PayPal"].map((method) => (
+            {["UPI", "RuPay", "Visa", "Mastercard"].map((method) => (
               <span
                 key={method}
                 className="font-accent text-[9px] tracking-wider uppercase border border-border px-2 py-1 text-muted"

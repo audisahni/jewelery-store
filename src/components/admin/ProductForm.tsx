@@ -186,7 +186,7 @@ export default function ProductForm({ product }: ProductFormProps) {
           <Input
             id="name"
             {...register("name")}
-            placeholder="e.g. Lumière Diamond Ring"
+            placeholder="e.g. Kundan Meenakari Necklace"
           />
           {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
         </div>
@@ -233,6 +233,11 @@ export default function ProductForm({ product }: ProductFormProps) {
               <SelectItem value="necklaces">Necklaces</SelectItem>
               <SelectItem value="earrings">Earrings</SelectItem>
               <SelectItem value="bracelets">Bracelets</SelectItem>
+              <SelectItem value="bangles">Bangles</SelectItem>
+              <SelectItem value="maang-tikka">Maang Tikka</SelectItem>
+              <SelectItem value="anklets">Anklets</SelectItem>
+              <SelectItem value="nose-rings">Nose Rings</SelectItem>
+              <SelectItem value="sets">Jewelry Sets</SelectItem>
               <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
@@ -244,7 +249,7 @@ export default function ProductForm({ product }: ProductFormProps) {
             id="description"
             {...register("description")}
             rows={5}
-            placeholder="Describe the piece — its story, craftsmanship, and unique qualities..."
+            placeholder="Describe the piece — its inspiration, the techniques used, and what makes it unique..."
           />
         </div>
 
@@ -253,7 +258,7 @@ export default function ProductForm({ product }: ProductFormProps) {
           <Input
             id="material"
             {...register("material")}
-            placeholder="e.g. 18k Yellow Gold, Diamond"
+            placeholder="e.g. Sterling Silver, Kundan, Polki Diamonds"
           />
         </div>
 
@@ -276,10 +281,10 @@ export default function ProductForm({ product }: ProductFormProps) {
         <h3 className="font-display text-lg">Pricing</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="price">Price (USD) *</Label>
+            <Label htmlFor="price">Price (₹ INR) *</Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-sm">
-                $
+                ₹
               </span>
               <Input
                 id="price"
@@ -305,19 +310,19 @@ export default function ProductForm({ product }: ProductFormProps) {
                   if (!checked) setValue("compareAtPrice", null);
                 }}
               />
-              <Label>On Sale (show original price)</Label>
+              <Label>On Sale (show original price crossed out)</Label>
             </div>
             {showSale && (
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-sm">
-                  $
+                  ₹
                 </span>
                 <Input
                   type="number"
                   step="0.01"
                   min="0"
                   className="pl-7"
-                  placeholder="Original / compare-at price"
+                  placeholder="Original price before discount"
                   {...register("compareAtPrice", { valueAsNumber: true })}
                 />
               </div>

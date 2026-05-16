@@ -24,7 +24,7 @@ function NewsletterSection() {
           First to Know
         </h2>
         <p className="font-body text-sm text-background/70 mb-10">
-          Receive invitations to private previews, new arrivals, and stories from the atelier.
+          Be the first to see new designs from Gurleen&apos;s studio — new arrivals, behind-the-scenes, and exclusive pieces.
         </p>
         <form action="#" method="POST" className="flex gap-0">
           <input
@@ -59,7 +59,7 @@ export default async function HomePage() {
         <section className="py-[120px] px-6 bg-background">
           <div className="max-w-[1320px] mx-auto">
             <div className="text-center mb-16">
-              <p className="font-accent text-xs tracking-[0.3em] uppercase text-muted mb-4">Handpicked for you</p>
+              <p className="font-accent text-xs tracking-[0.3em] uppercase text-muted mb-4">Handpicked by Gurleen</p>
               <h2 className="font-display text-5xl md:text-6xl text-foreground">Featured Pieces</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
@@ -72,7 +72,7 @@ export default async function HomePage() {
                 href="/shop"
                 className="inline-flex items-center gap-3 border border-foreground text-foreground font-accent text-xs tracking-[0.2em] uppercase px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-300"
               >
-                View All Jewelry
+                View Full Collection
                 <span className="w-6 h-px bg-current" />
               </Link>
             </div>
@@ -84,7 +84,7 @@ export default async function HomePage() {
       <section className="py-[120px] px-6 bg-secondary">
         <div className="max-w-[1320px] mx-auto">
           <div className="text-center mb-16">
-            <p className="font-accent text-xs tracking-[0.3em] uppercase text-muted mb-4">Shop by Category</p>
+            <p className="font-accent text-xs tracking-[0.3em] uppercase text-muted mb-4">Explore by Category</p>
             <h2 className="font-display text-5xl md:text-6xl text-foreground">Collections</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -114,20 +114,36 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Our Story */}
+      {/* Gurleen's Story */}
       <section className="py-[120px] px-6 bg-background">
-        <div className="max-w-[640px] mx-auto text-center">
-          <p className="font-accent text-xs tracking-[0.3em] uppercase text-muted mb-8">Our Story</p>
+        <div className="max-w-[760px] mx-auto text-center">
+          <p className="font-accent text-xs tracking-[0.3em] uppercase text-muted mb-8">The Story Behind EZMAY</p>
           <h2 className="font-display text-5xl md:text-6xl text-foreground mb-8">
-            Crafted with Intention
+            Crafted by a Master,<br />Worn with Pride
           </h2>
-          <div className="w-12 h-px bg-primary mx-auto mb-8" />
+          <div className="w-12 h-px bg-primary mx-auto mb-10" />
           <p className="font-body text-base text-muted leading-relaxed mb-6">
-            Every piece in our collection begins as a vision — a conversation between ancient craft and modern sensibility. We work with master goldsmiths and source only certified, ethically obtained gemstones.
+            EZMAY By Gurleen was born from a lifelong devotion to India&apos;s extraordinary jewelry-making heritage.
+            Gurleen is a trained jewelry designer with over 15 years of professional experience — a career spent
+            not only creating, but also teaching. As a professor, she has guided hundreds of aspiring designers,
+            passing down the rare techniques of Kundan, Meenakari, Jadau, and contemporary Indian fusion.
           </p>
-          <p className="font-body text-base text-muted leading-relaxed">
-            From initial sketch to final polish, each jewel undergoes over 40 hours of artisanal attention. We believe that fine jewelry is not merely an accessory — it is a story worn close to the skin, a heirloom in the making.
+          <p className="font-body text-base text-muted leading-relaxed mb-6">
+            Her studio in New Delhi is where tradition meets creative vision. Every piece begins as a sketch
+            in Gurleen&apos;s hand, progresses through patient handcrafting, and emerges finished with the pride
+            of a true artisan. No two pieces are exactly alike — each carries within it hours of careful work
+            and a deep respect for the craft.
           </p>
+          <p className="font-body text-base text-muted leading-relaxed mb-12">
+            EZMAY is not just jewelry — it is a conversation between India&apos;s past and its present,
+            designed to become the heirlooms of tomorrow.
+          </p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="font-display text-xl text-foreground">Gurleen</p>
+            <p className="font-accent text-xs tracking-widest uppercase text-primary">
+              Jewelry Designer & Professor · New Delhi, India
+            </p>
+          </div>
           <Link
             href="/shop"
             className="inline-flex items-center gap-3 mt-12 font-accent text-xs tracking-[0.2em] uppercase text-foreground border-b border-foreground pb-1 hover:text-primary hover:border-primary transition-colors duration-200"

@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl text-foreground">Dashboard</h1>
-          <p className="font-body text-sm text-muted mt-1">Welcome back to Lumière Admin</p>
+          <p className="font-body text-sm text-muted mt-1">Welcome back to EZMAY Admin</p>
         </div>
         <div className="flex gap-3">
           <Link

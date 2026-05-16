@@ -4,15 +4,17 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingBag, Menu, X, Search } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { useEcommerce } from "@/contexts/EcommerceContext";
 import { cn } from "@/lib/utils";
 import CartDrawer from "@/components/store/CartDrawer";
 
 const navLinks = [
-  { href: "/shop", label: "Shop" },
+  { href: "/shop", label: "Collection" },
   { href: "/shop?category=rings", label: "Rings" },
   { href: "/shop?category=necklaces", label: "Necklaces" },
   { href: "/shop?category=earrings", label: "Earrings" },
   { href: "/shop?category=bracelets", label: "Bracelets" },
+  { href: "/shop?category=bangles", label: "Bangles" },
 ];
 
 export default function Navbar() {
@@ -20,6 +22,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const { items } = useCart();
+  const { enabled: ecommerceEnabled } = useEcommerce();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
@@ -28,7 +31,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -48,9 +50,14 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="font-display text-xl tracking-[0.25em] uppercase text-foreground shrink-0"
+            className="flex flex-col items-start leading-none shrink-0"
           >
-            Lumière
+            <span className="font-display text-xl tracking-[0.25em] uppercase text-foreground">
+              EZMAY
+            </span>
+            <span className="font-body text-[9px] tracking-[0.2em] uppercase text-primary -mt-0.5">
+              By Gurleen
+            </span>
           </Link>
 
           {/* Desktop nav — centered */}
@@ -75,18 +82,20 @@ export default function Navbar() {
               <Search size={18} />
             </button>
 
-            <button
-              onClick={() => setCartOpen(true)}
-              aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}
-              className="relative p-2 text-foreground/70 hover:text-foreground transition-colors rounded-sm"
-            >
-              <ShoppingBag size={18} />
-              {itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 size-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-body font-medium leading-none">
-                  {itemCount > 9 ? "9+" : itemCount}
-                </span>
-              )}
-            </button>
+            {ecommerceEnabled && (
+              <button
+                onClick={() => setCartOpen(true)}
+                aria-label={`Cart, ${itemCount} item${itemCount !== 1 ? "s" : ""}`}
+                className="relative p-2 text-foreground/70 hover:text-foreground transition-colors rounded-sm"
+              >
+                <ShoppingBag size={18} />
+                {itemCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 size-4 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-body font-medium leading-none">
+                    {itemCount > 9 ? "9+" : itemCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* Mobile menu toggle */}
             <button
@@ -116,7 +125,7 @@ export default function Navbar() {
         )}
       </header>
 
-      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      {ecommerceEnabled && <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />}
     </>
   );
 }

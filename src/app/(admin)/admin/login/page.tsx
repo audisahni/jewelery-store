@@ -34,8 +34,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-secondary flex items-center justify-center p-6">
       <div className="w-full max-w-sm bg-background p-10">
         <div className="text-center mb-10">
-          <h1 className="font-display text-4xl text-foreground mb-2">Lumière</h1>
-          <p className="font-accent text-xs tracking-[0.2em] uppercase text-muted">Admin Panel</p>
+          <h1 className="font-display text-4xl text-foreground mb-2">EZMAY</h1>
+          <p className="font-accent text-xs tracking-[0.2em] uppercase text-muted">By Gurleen · Admin</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

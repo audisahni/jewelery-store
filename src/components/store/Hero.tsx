@@ -9,13 +9,12 @@ interface HeroProps {
 }
 
 export default function Hero({
-  heading = "Crafted for\nEternity",
-  subheading = "Discover our collection of handcrafted fine jewelry, where each piece tells a story of timeless elegance.",
-  ctaText = "Explore Collection",
+  heading = "Born of\nTradition",
+  subheading = "Handcrafted artisan jewelry rooted in India's rich cultural heritage — each piece designed and made by Gurleen in New Delhi.",
+  ctaText = "View Collection",
   ctaHref = "/shop",
-  announcementText = "Complimentary shipping on orders over $500  ·  Certified fine jewelry  ·  30-day returns",
+  announcementText = "Handcrafted in New Delhi  ·  Designed by Gurleen  ·  15 Years of Artisan Excellence  ·  Enquiries Welcome",
 }: HeroProps) {
-  // Repeat announcement text enough times that it fills the marquee track (we duplicate for seamless loop)
   const repeatedText = Array(6).fill(announcementText).join("    ·    ");
 
   return (
@@ -23,7 +22,6 @@ export default function Hero({
       {/* Announcement bar */}
       <div className="bg-foreground text-background overflow-hidden shrink-0">
         <div className="flex py-2.5">
-          {/* Two identical spans side-by-side; the animation moves left by 50% for a seamless loop */}
           <div
             className="flex shrink-0 whitespace-nowrap"
             style={{ animation: "marquee 30s linear infinite" }}
@@ -31,7 +29,6 @@ export default function Hero({
             <span className="font-accent text-[10px] tracking-[0.2em] uppercase px-8">
               {repeatedText}
             </span>
-            {/* Duplicate to fill the second half so the loop is invisible */}
             <span className="font-accent text-[10px] tracking-[0.2em] uppercase px-8" aria-hidden>
               {repeatedText}
             </span>
@@ -41,7 +38,6 @@ export default function Hero({
 
       {/* Hero content */}
       <div className="flex-1 flex items-center justify-center bg-secondary relative overflow-hidden px-6">
-        {/* Subtle vignette gradient */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -61,7 +57,7 @@ export default function Hero({
               opacity: 0,
             }}
           >
-            Fine Jewelry Collection
+            EZMAY By Gurleen
           </p>
 
           {/* Main heading */}
