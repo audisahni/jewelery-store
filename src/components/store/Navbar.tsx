@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingBag, Menu, X, Search } from "lucide-react";
+import { ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { cn } from "@/lib/utils";
@@ -75,13 +75,6 @@ export default function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-1">
-            <button
-              aria-label="Search"
-              className="p-2 text-foreground/70 hover:text-foreground transition-colors rounded-sm"
-            >
-              <Search size={18} />
-            </button>
-
             {ecommerceEnabled && (
               <button
                 onClick={() => setCartOpen(true)}

@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import NewsletterForm from "@/components/store/NewsletterForm";
+import { useEcommerce } from "@/contexts/EcommerceContext";
 
 const shopLinks = [
   { href: "/shop", label: "All Jewelry" },
@@ -19,12 +22,13 @@ const infoLinks = [
 ];
 
 export default function Footer() {
+  const { newsletterEnabled } = useEcommerce();
   const year = new Date().getFullYear();
 
   return (
     <footer className="border-t border-border bg-background">
       {/* Main footer grid */}
-      <div className="max-w-[1320px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className={`max-w-[1320px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 ${newsletterEnabled ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-12`}>
         {/* Brand column */}
         <div className="lg:col-span-1 flex flex-col gap-6">
           <Link
@@ -105,16 +109,18 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Newsletter */}
-        <div className="flex flex-col gap-5">
-          <p className="font-accent text-xs tracking-widest uppercase text-foreground">
-            Stay Connected
-          </p>
-          <p className="font-body text-sm text-muted leading-relaxed">
-            Be the first to see new designs, behind-the-scenes from the studio, and exclusive pieces.
-          </p>
-          <NewsletterForm />
-        </div>
+        {/* Newsletter — only when enabled in admin */}
+        {newsletterEnabled && (
+          <div className="flex flex-col gap-5">
+            <p className="font-accent text-xs tracking-widest uppercase text-foreground">
+              Stay Connected
+            </p>
+            <p className="font-body text-sm text-muted leading-relaxed">
+              Be the first to see new designs from Gurleen&apos;s studio — new arrivals, behind-the-scenes, and exclusive pieces.
+            </p>
+            <NewsletterForm />
+          </div>
+        )}
       </div>
 
       {/* Bottom bar */}

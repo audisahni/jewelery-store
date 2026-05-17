@@ -9,9 +9,14 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   // Default to OFF until explicitly enabled in Settings
   const ecommerceEnabled = settings.ecommerceEnabled === "true";
   const whatsappNumber = settings.whatsappNumber ?? "";
+  const newsletterEnabled = settings.newsletterEnabled === "true";
 
   return (
-    <EcommerceProvider enabled={ecommerceEnabled} whatsappNumber={whatsappNumber}>
+    <EcommerceProvider
+      enabled={ecommerceEnabled}
+      whatsappNumber={whatsappNumber}
+      newsletterEnabled={newsletterEnabled}
+    >
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

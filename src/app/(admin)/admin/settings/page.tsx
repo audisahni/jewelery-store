@@ -18,6 +18,7 @@ interface Settings {
   instagramUrl: string;
   primaryColor: string;
   ecommerceEnabled: string;
+  newsletterEnabled: string;
 }
 
 const defaultSettings: Settings = {
@@ -35,6 +36,7 @@ const defaultSettings: Settings = {
   instagramUrl: "",
   primaryColor: "#C9A84C",
   ecommerceEnabled: "false",
+  newsletterEnabled: "false",
 };
 
 export default function SettingsPage() {
@@ -89,6 +91,7 @@ export default function SettingsPage() {
   const sectionClass = "bg-background border border-border p-6 space-y-4";
 
   const ecommerceOn = settings.ecommerceEnabled === "true";
+  const newsletterOn = settings.newsletterEnabled === "true";
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -161,6 +164,39 @@ export default function SettingsPage() {
                 </p>
               </div>
             )}
+          </div>
+
+          {/* Newsletter Toggle */}
+          <div className={sectionClass}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-display text-lg text-foreground">Email Newsletter</h2>
+                <p className="font-body text-sm text-muted mt-0.5">
+                  {newsletterOn
+                    ? "The newsletter sign-up section is visible on the homepage and footer."
+                    : "Newsletter sign-up is hidden. Enable when your email service is ready."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setSettings(prev => ({
+                    ...prev,
+                    newsletterEnabled: prev.newsletterEnabled === "true" ? "false" : "true",
+                  }))
+                }
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors shrink-0 ${
+                  newsletterOn ? "bg-primary" : "bg-border"
+                }`}
+                aria-pressed={newsletterOn}
+              >
+                <span
+                  className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                    newsletterOn ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
           </div>
 
           {/* Store Identity */}

@@ -3,6 +3,7 @@ import ProductCard from "@/components/store/ProductCard";
 import Link from "next/link";
 import Image from "next/image";
 import { getProducts } from "@/lib/data";
+import NewsletterSection from "@/components/store/NewsletterSection";
 
 const CATEGORIES = [
   { name: "Rings", slug: "rings", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80" },
@@ -13,37 +14,6 @@ const CATEGORIES = [
 
 async function getFeaturedProducts() {
   return getProducts({ featured: true, activeOnly: true });
-}
-
-function NewsletterSection() {
-  return (
-    <section className="py-[120px] px-6 bg-foreground text-background">
-      <div className="max-w-[560px] mx-auto text-center">
-        <p className="font-accent text-xs tracking-[0.3em] uppercase text-background/60 mb-4">Stay Connected</p>
-        <h2 className="font-display text-4xl md:text-5xl text-background mb-4">
-          First to Know
-        </h2>
-        <p className="font-body text-sm text-background/70 mb-10">
-          Be the first to see new designs from Gurleen&apos;s studio — new arrivals, behind-the-scenes, and exclusive pieces.
-        </p>
-        <form action="#" method="POST" className="flex gap-0">
-          <input
-            type="email"
-            name="email"
-            placeholder="Your email address"
-            required
-            className="flex-1 bg-background/10 border border-background/20 text-background placeholder:text-background/40 px-5 py-3 text-sm font-body outline-none focus:border-primary transition-colors"
-          />
-          <button
-            type="submit"
-            className="bg-primary text-white font-accent text-xs tracking-widest uppercase px-8 py-3 hover:bg-primary/80 transition-colors whitespace-nowrap"
-          >
-            Subscribe
-          </button>
-        </form>
-      </div>
-    </section>
-  );
 }
 
 export default async function HomePage() {
@@ -141,7 +111,7 @@ export default async function HomePage() {
           <div className="flex flex-col items-center gap-2">
             <p className="font-display text-xl text-foreground">Gurleen</p>
             <p className="font-accent text-xs tracking-widest uppercase text-primary">
-              Jewelry Designer & Professor · New Delhi, India
+              Jewelry Designer &amp; Professor · New Delhi, India
             </p>
           </div>
           <Link
@@ -153,7 +123,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Newsletter */}
+      {/* Newsletter — only shown when enabled in admin settings */}
       <NewsletterSection />
     </div>
   );

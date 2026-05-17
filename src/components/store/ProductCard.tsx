@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { Product } from "@/types";
 import { useCart } from "@/hooks/useCart";
+import { useEcommerce } from "@/contexts/EcommerceContext";
 import { formatPrice, cn } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -35,6 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
   const [addedFeedback, setAddedFeedback] = useState(false);
   const { addItem } = useCart();
+  const { enabled: ecommerceEnabled } = useEcommerce();
 
   const images = Array.isArray(product.images) ? (product.images as string[]) : [];
   const primarySrc = product.primaryImage ?? images[0] ?? null;
@@ -98,30 +100,32 @@ export default function ProductCard({ product }: ProductCardProps) {
           <StockBadge stock={product.stock} />
         </div>
 
-        {/* Quick add button — slides up on hover */}
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 right-0 transition-all duration-300",
-            hovered ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
-          )}
-        >
-          <button
-            onClick={handleQuickAdd}
-            disabled={isOutOfStock}
-            aria-label={`Quick add ${product.name} to cart`}
+        {/* Quick add — only when e-commerce is enabled */}
+        {ecommerceEnabled && (
+          <div
             className={cn(
-              "w-full flex items-center justify-center gap-2 py-3 font-accent text-[10px] tracking-[0.2em] uppercase transition-colors duration-200",
-              isOutOfStock
-                ? "bg-muted/30 text-muted cursor-not-allowed"
-                : addedFeedback
-                ? "bg-primary text-white"
-                : "bg-background/95 text-foreground hover:bg-primary hover:text-white"
+              "absolute bottom-0 left-0 right-0 transition-all duration-300",
+              hovered ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
             )}
           >
-            <ShoppingBag size={12} />
-            {addedFeedback ? "Added" : isOutOfStock ? "Out of Stock" : "Quick Add"}
-          </button>
-        </div>
+            <button
+              onClick={handleQuickAdd}
+              disabled={isOutOfStock}
+              aria-label={`Quick add ${product.name} to cart`}
+              className={cn(
+                "w-full flex items-center justify-center gap-2 py-3 font-accent text-[10px] tracking-[0.2em] uppercase transition-colors duration-200",
+                isOutOfStock
+                  ? "bg-muted/30 text-muted cursor-not-allowed"
+                  : addedFeedback
+                  ? "bg-primary text-white"
+                  : "bg-background/95 text-foreground hover:bg-primary hover:text-white"
+              )}
+            >
+              <ShoppingBag size={12} />
+              {addedFeedback ? "Added" : isOutOfStock ? "Out of Stock" : "Quick Add"}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Product info */}
