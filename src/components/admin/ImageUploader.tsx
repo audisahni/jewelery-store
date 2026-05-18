@@ -17,34 +17,28 @@ export default function ImageUploader({ images, onChange }: ImageUploaderProps) 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = async (file: File) => {
-    const ext = file.name.split(".").pop();
-    const filename = `products/${crypto.randomUUID()}.${ext}`;
+    const key = file.name;
+    setUploading((prev) => ({ ...prev, [key]: 0 }));
 
     try {
+      const formData = new FormData();
+      formData.append("file", file);
+
       const res = await fetch("/api/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename, contentType: file.type }),
+        body: formData,
       });
 
-      if (!res.ok) throw new Error("Failed to get upload URL");
-      const { presignedUrl, publicUrl } = await res.json();
+      if (!res.ok) throw new Error("Upload failed");
+      const { publicUrl } = await res.json() as { publicUrl: string };
 
-      setUploading((prev) => ({ ...prev, [filename]: 0 }));
-
-      await fetch(presignedUrl, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-
-      setUploading((prev) => ({ ...prev, [filename]: 100 }));
+      setUploading((prev) => ({ ...prev, [key]: 100 }));
       onChange([...images, publicUrl]);
 
       setTimeout(() => {
         setUploading((prev) => {
           const next = { ...prev };
-          delete next[filename];
+          delete next[key];
           return next;
         });
       }, 800);
@@ -54,7 +48,7 @@ export default function ImageUploader({ images, onChange }: ImageUploaderProps) 
       toast.error(`Failed to upload ${file.name}`);
       setUploading((prev) => {
         const next = { ...prev };
-        delete next[filename];
+        delete next[key];
         return next;
       });
     }

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { generatePresignedUrl } from "@/lib/r2";
 import { auth } from "@/lib/auth";
-
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -10,16 +9,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { filename, contentType } = await req.json();
-    if (!filename || !contentType) {
-      return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+    const formData = await req.formData();
+    const file = formData.get("file") as File | null;
+
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const { presignedUrl, publicUrl } = await generatePresignedUrl(filename, contentType);
+    const { env } = await getCloudflareContext();
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const key = `products/${crypto.randomUUID()}.${ext}`;
 
-    return NextResponse.json({ presignedUrl, publicUrl });
+    await env.R2.put(key, file.stream(), {
+      httpMetadata: { contentType: file.type },
+    });
+
+    const publicUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
+    return NextResponse.json({ publicUrl });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    console.error("Upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
