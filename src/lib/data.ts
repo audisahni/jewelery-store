@@ -1,7 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
 import { products, orders, settings } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export async function getProducts(opts?: {
   featured?: boolean;
@@ -20,6 +20,17 @@ export async function getProducts(opts?: {
     return result;
   } catch {
     return [];
+  }
+}
+
+export async function getProductById(id: string) {
+  try {
+    const { env } = await getCloudflareContext();
+    const db = getDb(env);
+    const result = await db.select().from(products).where(eq(products.id, id)).limit(1);
+    return result[0] ?? null;
+  } catch {
+    return null;
   }
 }
 

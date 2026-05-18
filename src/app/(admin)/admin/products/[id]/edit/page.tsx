@@ -3,17 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import ProductForm from "@/components/admin/ProductForm";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-
-async function getProduct(id: string) {
-  try {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/products/${id}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
+import { getProductById } from "@/lib/data";
 
 export default async function EditProductPage({
   params,
@@ -24,7 +14,7 @@ export default async function EditProductPage({
   if (!session?.user) redirect("/admin/login");
 
   const { id } = await params;
-  const product = await getProduct(id);
+  const product = await getProductById(id);
 
   if (!product) notFound();
 
