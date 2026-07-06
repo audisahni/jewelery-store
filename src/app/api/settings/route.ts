@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   try {
     const { env } = await getCloudflareContext();
     const db = getDb(env);
-    const body = await req.json();
+    const body = (await req.json()) as Record<string, unknown>;
 
     for (const [key, value] of Object.entries(body)) {
       if (typeof value === "string") {

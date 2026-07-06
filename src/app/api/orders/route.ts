@@ -4,32 +4,6 @@ import { getDb } from "@/lib/db";
 import { orders } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { z } from "zod";
-
-
-const createOrderSchema = z.object({
-  stripePaymentIntentId: z.string(),
-  customerEmail: z.string().email(),
-  customerName: z.string(),
-  items: z.array(z.object({
-    productId: z.string(),
-    name: z.string(),
-    price: z.number(),
-    quantity: z.number(),
-    image: z.string().optional(),
-  })),
-  subtotal: z.number(),
-  shipping: z.number(),
-  total: z.number(),
-  shippingAddress: z.object({
-    line1: z.string(),
-    line2: z.string().optional(),
-    city: z.string(),
-    state: z.string(),
-    postal_code: z.string(),
-    country: z.string(),
-  }),
-});
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -54,28 +28,13 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
-  try {
-    const { env } = await getCloudflareContext();
-    const db = getDb(env);
-    const body = await req.json();
-    const data = createOrderSchema.parse(body);
-
-    const id = crypto.randomUUID();
-    await db.insert(orders).values({
-      id,
-      ...data,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    });
-
-    return NextResponse.json({ success: true, id }, { status: 201 });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 });
-    }
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
-  }
+// Orders are created by Shopify and mirrored into D1 via the Shopify webhook
+// (see /api/shopify/webhook). The storefront no longer creates orders directly.
+export async function POST() {
+  return NextResponse.json(
+    { error: "Orders are created via Shopify checkout, not this endpoint." },
+    { status: 405 },
+  );
 }
 
 export async function PATCH(req: Request) {
@@ -85,7 +44,12 @@ export async function PATCH(req: Request) {
   try {
     const { env } = await getCloudflareContext();
     const db = getDb(env);
-    const { id, status, trackingNumber } = await req.json();
+    const { id, status, trackingNumber } = (await req.json()) as {
+      id?: string;
+      status?: string;
+      trackingNumber?: string;
+    };
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
     const updates: Record<string, any> = {};
     if (status) updates.status = status;

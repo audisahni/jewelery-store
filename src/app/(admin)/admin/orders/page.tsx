@@ -12,7 +12,7 @@ export default function AdminOrdersPage() {
     try {
       const res = await fetch("/api/orders");
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as Order[];
         setOrders(data);
       }
     } catch {}

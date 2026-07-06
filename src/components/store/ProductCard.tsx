@@ -13,19 +13,20 @@ interface ProductCardProps {
   product: Product;
 }
 
-function StockBadge({ stock }: { stock: number | null }) {
-  if (stock === null) return null;
-  if (stock === 0) {
+// Shopify exposes per-variant `quantityAvailable` only when inventory is tracked;
+// it can be null. We show a low-stock nudge only when we have a real number.
+function StockBadge({ available, qty }: { available: boolean; qty: number | null }) {
+  if (!available) {
     return (
       <span className="font-accent text-[9px] tracking-widest uppercase bg-foreground text-background px-2 py-1">
         Out of Stock
       </span>
     );
   }
-  if (stock <= 3) {
+  if (qty !== null && qty > 0 && qty <= 3) {
     return (
       <span className="font-accent text-[9px] tracking-widest uppercase bg-background/90 text-foreground border border-border px-2 py-1">
-        Only {stock} left
+        Only {qty} left
       </span>
     );
   }
@@ -35,20 +36,21 @@ function StockBadge({ stock }: { stock: number | null }) {
 export default function ProductCard({ product }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
   const [addedFeedback, setAddedFeedback] = useState(false);
-  const { addItem } = useCart();
+  const { add } = useCart();
   const { enabled: ecommerceEnabled } = useEcommerce();
 
-  const images = Array.isArray(product.images) ? (product.images as string[]) : [];
+  const images = product.images ?? [];
   const primarySrc = product.primaryImage ?? images[0] ?? null;
   const hoverSrc = images.length >= 2 ? images[1] : null;
 
-  const isOutOfStock = product.stock !== null && product.stock === 0;
+  const defaultVariant = product.variants.find((v) => v.id === product.defaultVariantId);
+  const isOutOfStock = !product.available || !product.defaultVariantId;
 
   function handleQuickAdd(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (isOutOfStock) return;
-    addItem(product, 1);
+    if (isOutOfStock || !product.defaultVariantId) return;
+    add(product.defaultVariantId, 1);
     setAddedFeedback(true);
     setTimeout(() => setAddedFeedback(false), 1800);
   }
@@ -97,7 +99,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Stock badge — top-left */}
         <div className="absolute top-3 left-3">
-          <StockBadge stock={product.stock} />
+          <StockBadge available={product.available} qty={defaultVariant?.quantityAvailable ?? null} />
         </div>
 
         {/* Quick add — only when e-commerce is enabled */}

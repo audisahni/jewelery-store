@@ -7,6 +7,8 @@ import { Product } from "@/types";
 import { useCart } from "@/hooks/useCart";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { formatPrice, cn } from "@/lib/utils";
+import { gstLabel, gstFromInclusive } from "@/lib/india";
+import PincodeChecker from "@/components/store/PincodeChecker";
 import ProductCard from "@/components/store/ProductCard";
 
 type Tab = "description" | "materials" | "shipping";
@@ -100,7 +102,7 @@ interface ProductDetailProps {
 export default function ProductDetail({ product, relatedProducts = [] }: ProductDetailProps) {
   const { enabled: ecommerceEnabled, whatsappNumber } = useEcommerce();
 
-  const images = Array.isArray(product.images) ? (product.images as string[]) : [];
+  const images = product.images ?? [];
   const allImages: string[] = [];
   if (product.primaryImage) allImages.push(product.primaryImage);
   images.forEach((img) => { if (img !== product.primaryImage) allImages.push(img); });
@@ -112,10 +114,19 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
   const [tab, setTab] = useState<Tab>("description");
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
-  const { addItem } = useCart();
+  const { add, loading } = useCart();
 
-  const maxStock = product.stock ?? 99;
-  const isOutOfStock = product.stock !== null && product.stock === 0;
+  const hasVariants = product.variants.length > 1;
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    product.defaultVariantId ?? product.variants[0]?.id ?? null,
+  );
+  const selectedVariant = product.variants.find((v) => v.id === selectedVariantId) ?? null;
+
+  const price = selectedVariant?.price ?? product.price;
+  const compareAtPrice = selectedVariant?.compareAtPrice ?? product.compareAtPrice;
+  const qtyAvailable = selectedVariant?.quantityAvailable ?? null;
+  const maxStock = qtyAvailable ?? 99;
+  const isOutOfStock = !product.available || (selectedVariant ? !selectedVariant.available : true);
 
   function selectImage(idx: number) {
     if (idx === mainIndex) return;
@@ -125,8 +136,8 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
   }
 
   function handleAddToCart() {
-    if (isOutOfStock) return;
-    addItem(product, quantity);
+    if (isOutOfStock || !selectedVariantId) return;
+    add(selectedVariantId, quantity);
     setAddedFeedback(true);
     setTimeout(() => setAddedFeedback(false), 2000);
   }
@@ -138,21 +149,17 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
     setQuantity((q) => Math.min(maxStock, q + 1));
   }
 
-  const stockLabel =
-    product.stock === null
-      ? null
-      : product.stock === 0
-      ? "Out of Stock"
-      : product.stock <= 3
-      ? `Only ${product.stock} left`
-      : "Available";
+  const stockLabel = isOutOfStock
+    ? "Out of Stock"
+    : qtyAvailable !== null && qtyAvailable <= 3
+    ? `Only ${qtyAvailable} left`
+    : "Available";
 
-  const stockColor =
-    product.stock === 0
-      ? "text-destructive"
-      : product.stock !== null && product.stock <= 3
-      ? "text-primary"
-      : "text-foreground/60";
+  const stockColor = isOutOfStock
+    ? "text-destructive"
+    : qtyAvailable !== null && qtyAvailable <= 3
+    ? "text-primary"
+    : "text-foreground/60";
 
   const whatsappMessage = encodeURIComponent(
     `Namaste! I came across "${product.name}" on EZMAY By Gurleen and I'm interested in learning more. Could you please share details about availability and pricing?`
@@ -244,37 +251,66 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
               {/* Price */}
               <div className="flex items-baseline gap-3 mt-1">
                 <span className="font-display text-3xl text-primary">
-                  {formatPrice(product.price)}
+                  {formatPrice(price)}
                 </span>
-                {product.compareAtPrice && product.compareAtPrice > product.price && (
+                {compareAtPrice && compareAtPrice > price && (
                   <span className="font-body text-lg text-muted line-through">
-                    {formatPrice(product.compareAtPrice)}
+                    {formatPrice(compareAtPrice)}
                   </span>
                 )}
-                {product.compareAtPrice && product.compareAtPrice > product.price && (
+                {compareAtPrice && compareAtPrice > price && (
                   <span className="font-accent text-[10px] tracking-widest uppercase text-primary border border-primary px-2 py-0.5">
                     Sale
                   </span>
                 )}
               </div>
+              {/* GST transparency — jewelry prices are shown inclusive of GST */}
+              <p className="font-body text-xs text-muted">
+                Inclusive of {gstLabel()} · {formatPrice(gstFromInclusive(price))} tax
+              </p>
             </div>
 
-            {/* Stock indicator */}
-            {stockLabel && (
-              <p className={cn("font-body text-sm flex items-center gap-2", stockColor)}>
-                <span
-                  className={cn(
-                    "inline-block size-2 rounded-full",
-                    product.stock === 0
-                      ? "bg-destructive"
-                      : product.stock !== null && product.stock <= 3
-                      ? "bg-primary"
-                      : "bg-green-500"
-                  )}
-                />
-                {stockLabel}
-              </p>
+            {/* Variant selector */}
+            {hasVariants && (
+              <div className="flex flex-col gap-3">
+                <p className="font-accent text-[10px] tracking-widest uppercase text-muted">
+                  Options
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((v) => (
+                    <button
+                      key={v.id}
+                      onClick={() => { setSelectedVariantId(v.id); setQuantity(1); }}
+                      disabled={!v.available}
+                      className={cn(
+                        "px-4 py-2 font-body text-sm border transition-colors",
+                        v.id === selectedVariantId
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border text-foreground hover:border-foreground",
+                        !v.available && "opacity-40 line-through cursor-not-allowed"
+                      )}
+                    >
+                      {v.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {/* Stock indicator */}
+            <p className={cn("font-body text-sm flex items-center gap-2", stockColor)}>
+              <span
+                className={cn(
+                  "inline-block size-2 rounded-full",
+                  isOutOfStock
+                    ? "bg-destructive"
+                    : qtyAvailable !== null && qtyAvailable <= 3
+                    ? "bg-primary"
+                    : "bg-green-500"
+                )}
+              />
+              {stockLabel}
+            </p>
 
             {/* CTA — e-commerce on: Add to Cart | e-commerce off: Enquire */}
             <div className="flex flex-col gap-4">
@@ -305,7 +341,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
 
                   <button
                     onClick={handleAddToCart}
-                    disabled={isOutOfStock}
+                    disabled={isOutOfStock || loading}
                     className={cn(
                       "flex-1 py-3.5 font-accent text-xs tracking-[0.2em] uppercase transition-colors duration-300",
                       isOutOfStock
@@ -315,7 +351,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                         : "bg-foreground text-background hover:bg-primary"
                     )}
                   >
-                    {isOutOfStock ? "Out of Stock" : addedFeedback ? "Added to Cart" : "Add to Cart"}
+                    {isOutOfStock ? "Out of Stock" : addedFeedback ? "Added to Cart" : loading ? "Adding…" : "Add to Cart"}
                   </button>
                 </div>
               ) : (
@@ -345,6 +381,13 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                   </p>
                 </div>
               )}
+
+              {/* Pincode serviceability + ETA (pre-checkout, powered by Shiprocket) */}
+              {ecommerceEnabled && (
+                <div className="pt-2">
+                  <PincodeChecker />
+                </div>
+              )}
             </div>
 
             {/* Divider */}
@@ -371,7 +414,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
 
               <div className="font-body text-sm text-muted leading-relaxed">
                 {tab === "description" && (
-                  <p>{product.description ?? "No description available."}</p>
+                  <p>{product.description || "No description available."}</p>
                 )}
                 {tab === "materials" && (
                   <div className="flex flex-col gap-4">
@@ -421,12 +464,6 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                   <span className="text-muted w-24 shrink-0">Material</span>
                   <span className="text-foreground">{product.material}</span>
                 </div>
-                {product.weight && (
-                  <div className="flex gap-2">
-                    <span className="text-muted w-24 shrink-0">Weight</span>
-                    <span className="text-foreground">{product.weight}g</span>
-                  </div>
-                )}
                 <div className="flex gap-2">
                   <span className="text-muted w-24 shrink-0">Origin</span>
                   <span className="text-foreground">Handcrafted in New Delhi, India</span>

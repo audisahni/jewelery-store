@@ -1,0 +1,26 @@
+# Local development secrets for `wrangler dev` / opennextjs-cloudflare preview.
+# Copy to `.dev.vars` (gitignored) and fill in. In production, set these with
+# `wrangler secret put <NAME>` instead — never commit real values.
+
+# --- Shopify Storefront API ---
+# Admin: Settings -> Apps and sales channels -> Develop apps -> your app ->
+#   API credentials -> Storefront API access token
+SHOPIFY_STOREFRONT_API_TOKEN=""
+# Also settable via wrangler.toml [vars] but overridable here for local testing:
+SHOPIFY_STORE_DOMAIN="your-store.myshopify.com"
+SHOPIFY_STOREFRONT_API_VERSION="2025-04"
+
+# --- Shopify webhooks ---
+# The app's API secret key (used to HMAC-verify inbound order webhooks).
+SHOPIFY_WEBHOOK_SECRET=""
+
+# --- Shiprocket (serviceability / ETA on product pages) ---
+SHIPROCKET_EMAIL=""
+SHIPROCKET_PASSWORD=""
+SHIPROCKET_PICKUP_PINCODE="110001"
+
+# --- Email (existing) ---
+RESEND_API_KEY=""
+
+# --- India display ---
+NEXT_PUBLIC_GST_RATE="0.03"

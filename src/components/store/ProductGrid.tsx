@@ -2,9 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { useProducts } from "@/hooks/useProducts";
 import { Product } from "@/types";
-import { formatPrice, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import ProductCard from "@/components/store/ProductCard";
 
 type SortOption = "featured" | "newest" | "price-asc" | "price-desc";
@@ -224,8 +223,9 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ initialProducts, initialCategory }: ProductGridProps) {
-  const { products: fetched, isLoading } = useProducts();
-  const products = initialProducts ?? fetched;
+  // Catalog is provided by the server (Shopify) via initialProducts.
+  const products = initialProducts ?? [];
+  const isLoading = false;
 
   const [filters, setFilters] = useState<Filters>({
     ...INITIAL_FILTERS,
@@ -250,7 +250,7 @@ export default function ProductGrid({ initialProducts, initialCategory }: Produc
   }, [products]);
 
   const filteredAndSorted = useMemo(() => {
-    let list = products.filter((p) => p.active !== false);
+    let list = [...products];
 
     if (filters.categories.length > 0) {
       list = list.filter((p) => p.category && filters.categories.includes(p.category));
@@ -259,15 +259,15 @@ export default function ProductGrid({ initialProducts, initialCategory }: Produc
       list = list.filter((p) => p.material && filters.materials.includes(p.material));
     }
     if (filters.priceMin !== "") {
-      const minCents = parseFloat(filters.priceMin) * 100;
-      list = list.filter((p) => p.price >= minCents);
+      const minPaise = parseFloat(filters.priceMin) * 100;
+      list = list.filter((p) => p.price >= minPaise);
     }
     if (filters.priceMax !== "") {
-      const maxCents = parseFloat(filters.priceMax) * 100;
-      list = list.filter((p) => p.price <= maxCents);
+      const maxPaise = parseFloat(filters.priceMax) * 100;
+      list = list.filter((p) => p.price <= maxPaise);
     }
     if (filters.inStockOnly) {
-      list = list.filter((p) => (p.stock ?? 0) > 0);
+      list = list.filter((p) => p.available);
     }
 
     switch (sort) {
@@ -275,9 +275,7 @@ export default function ProductGrid({ initialProducts, initialCategory }: Produc
         list = [...list].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
         break;
       case "newest":
-        list = [...list].sort((a, b) =>
-          new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
-        );
+        // Shopify already returns newest-first; preserve server order.
         break;
       case "price-asc":
         list = [...list].sort((a, b) => a.price - b.price);

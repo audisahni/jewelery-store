@@ -10,15 +10,25 @@ binding = "ASSETS"
 [vars]
 ADMIN_EMAIL = "gurleenchadha1@gmail.com"
 FROM_EMAIL = "onboarding@resend.dev"
-R2_BUCKET_NAME = "jewelry-store-assets"
+
+# --- Storefront / India config (non-sensitive; safe to commit) ---
+# Shopify Storefront API
+SHOPIFY_STORE_DOMAIN = "your-store.myshopify.com"
+SHOPIFY_STOREFRONT_API_VERSION = "2025-04"
+# GST rate used for on-storefront display only (authoritative tax is Shopify's)
+NEXT_PUBLIC_GST_RATE = "0.03"
+# Shiprocket pickup origin for serviceability checks
+SHIPROCKET_PICKUP_PINCODE = "110001"
+
+# --- SECRETS: do NOT put these here. Set with `wrangler secret put <NAME>` ---
+#   SHOPIFY_STOREFRONT_API_TOKEN   Storefront API public access token
+#   SHOPIFY_WEBHOOK_SECRET         Shopify webhook signing secret (API secret key)
+#   SHIPROCKET_EMAIL               Shiprocket API user email
+#   SHIPROCKET_PASSWORD            Shiprocket API user password
+#   RESEND_API_KEY                 (existing) transactional email
 
 [[d1_databases]]
 binding = "DB"
 database_name = "jewelry-store-db"
 database_id = "f322a821-758e-4524-aceb-57646d29eb2a"
-remote = true
-
-[[r2_buckets]]
-binding = "R2"
-bucket_name = "jewelry-store-assets"
 remote = true

@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
-  Package,
   ShoppingCart,
   Settings,
   Store,
@@ -13,9 +12,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Products & inventory are managed in Shopify Admin, so there is no local
+// Products nav item — the dashboard links out to Shopify instead.
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

@@ -48,7 +48,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch("/api/settings");
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as Partial<Settings>;
         setSettings(prev => ({ ...prev, ...data }));
       }
     } catch {}

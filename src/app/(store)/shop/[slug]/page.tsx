@@ -78,11 +78,10 @@ export default async function ProductPage({
     offers: {
       "@type": "Offer",
       price: product.price / 100,
-      priceCurrency: "USD",
-      availability:
-        (product.stock ?? 0) > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
+      priceCurrency: product.currencyCode || "INR",
+      availability: product.available
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
       url: `${process.env.NEXTAUTH_URL || "https://jewelrystore.com"}/shop/${product.slug}`,
     },
     ...(product.material && { material: product.material }),

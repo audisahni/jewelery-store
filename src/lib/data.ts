@@ -1,37 +1,28 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
-import { products, orders, settings } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { orders, settings } from "@/lib/db/schema";
+import { desc } from "drizzle-orm";
+import {
+  getProducts as shopifyGetProducts,
+  getProduct as shopifyGetProduct,
+} from "@/lib/shopify";
+import type { StoreProduct } from "@/lib/shopify/types";
 
+// Catalog reads come from Shopify. This adapter preserves the previous call-site
+// signature so store pages need no changes. `activeOnly` is a no-op: Shopify's
+// storefront query already filters to `available_for_sale:true` for listings,
+// while single-handle lookups return the product regardless.
 export async function getProducts(opts?: {
   featured?: boolean;
   category?: string;
   slug?: string;
   activeOnly?: boolean;
-}) {
-  try {
-    const { env } = await getCloudflareContext();
-    const db = getDb(env);
-    let result = await db.select().from(products).orderBy(desc(products.createdAt));
-    if (opts?.activeOnly !== false) result = result.filter((p) => !!p.active);
-    if (opts?.featured) result = result.filter((p) => !!p.featured);
-    if (opts?.category) result = result.filter((p) => p.category === opts.category);
-    if (opts?.slug) result = result.filter((p) => p.slug === opts.slug);
-    return result;
-  } catch {
-    return [];
+}): Promise<StoreProduct[]> {
+  if (opts?.slug) {
+    const product = await shopifyGetProduct(opts.slug);
+    return product ? [product] : [];
   }
-}
-
-export async function getProductById(id: string) {
-  try {
-    const { env } = await getCloudflareContext();
-    const db = getDb(env);
-    const result = await db.select().from(products).where(eq(products.id, id)).limit(1);
-    return result[0] ?? null;
-  } catch {
-    return null;
-  }
+  return shopifyGetProducts({ featured: opts?.featured, category: opts?.category });
 }
 
 export async function getOrders() {

@@ -20,16 +20,20 @@ const navLinks = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const { items } = useCart();
+  const { count, isOpen: cartOpen, setOpen: setCartOpen, refresh } = useCart();
   const { enabled: ecommerceEnabled } = useEcommerce();
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = count();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Reconcile the persisted cart with Shopify on load (prices/availability drift).
+  useEffect(() => {
+    if (ecommerceEnabled) refresh();
+  }, [ecommerceEnabled, refresh]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";

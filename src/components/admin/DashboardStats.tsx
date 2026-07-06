@@ -6,13 +6,11 @@ import {
   TrendingUp,
   TrendingDown,
   ShoppingCart,
-  Package,
-  DollarSign,
-  AlertTriangle,
+  IndianRupee,
   Activity,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
-import { Order, Product } from "@/types";
+import { Order } from "@/types";
 
 interface Stats {
   revenueThisMonth: number;
@@ -21,9 +19,6 @@ interface Stats {
   pendingOrders: number;
   paidOrders: number;
   shippedOrders: number;
-  totalProducts: number;
-  activeProducts: number;
-  lowStockProducts: number;
   recentOrders: Order[];
 }
 
@@ -48,49 +43,31 @@ export default function DashboardStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [ordersRes, productsRes] = await Promise.all([
-          fetch("/api/orders"),
-          fetch("/api/products"),
-        ]);
-
-        const ordersData = await ordersRes.json();
-        const productsData = await productsRes.json();
-
+        const ordersRes = await fetch("/api/orders");
+        const ordersData = (await ordersRes.json()) as any;
         const orders: Order[] = Array.isArray(ordersData) ? ordersData : ordersData.orders ?? [];
-        const products: Product[] = Array.isArray(productsData) ? productsData : productsData.products ?? [];
 
         const now = new Date();
         const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
+        const isRevenue = (o: Order) =>
+          o.status === "paid" || o.status === "shipped" || o.status === "delivered";
+
         const revenueThisMonth = orders
           .filter((o) => {
             const d = o.createdAt ? new Date(o.createdAt) : null;
-            return d && d >= thisMonthStart && (o.status === "paid" || o.status === "shipped" || o.status === "delivered");
+            return d && d >= thisMonthStart && isRevenue(o);
           })
           .reduce((sum, o) => sum + (o.total ?? 0), 0);
 
         const revenueLastMonth = orders
           .filter((o) => {
             const d = o.createdAt ? new Date(o.createdAt) : null;
-            return (
-              d &&
-              d >= lastMonthStart &&
-              d <= lastMonthEnd &&
-              (o.status === "paid" || o.status === "shipped" || o.status === "delivered")
-            );
+            return d && d >= lastMonthStart && d <= lastMonthEnd && isRevenue(o);
           })
           .reduce((sum, o) => sum + (o.total ?? 0), 0);
-
-        const pendingOrders = orders.filter((o) => o.status === "pending").length;
-        const paidOrders = orders.filter((o) => o.status === "paid").length;
-        const shippedOrders = orders.filter((o) => o.status === "shipped").length;
-
-        const activeProducts = products.filter((p) => p.active).length;
-        const lowStockProducts = products.filter(
-          (p) => p.stock !== null && p.stock !== undefined && p.stock <= 3 && p.active
-        ).length;
 
         const recentOrders = [...orders]
           .sort((a, b) => {
@@ -104,12 +81,9 @@ export default function DashboardStats() {
           revenueThisMonth,
           revenueLastMonth,
           totalOrders: orders.length,
-          pendingOrders,
-          paidOrders,
-          shippedOrders,
-          totalProducts: products.length,
-          activeProducts,
-          lowStockProducts,
+          pendingOrders: orders.filter((o) => o.status === "pending").length,
+          paidOrders: orders.filter((o) => o.status === "paid").length,
+          shippedOrders: orders.filter((o) => o.status === "shipped").length,
           recentOrders,
         });
       } catch (err) {
@@ -124,8 +98,7 @@ export default function DashboardStats() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <SkeletonCard />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
@@ -142,14 +115,14 @@ export default function DashboardStats() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Revenue */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-body text-muted font-normal">
               Revenue This Month
             </CardTitle>
-            <DollarSign size={18} className="text-muted" />
+            <IndianRupee size={18} className="text-muted" />
           </CardHeader>
           <CardContent>
             <p className="font-display text-2xl text-foreground">
@@ -200,28 +173,6 @@ export default function DashboardStats() {
               {stats.shippedOrders > 0 && (
                 <span className="text-[10px] font-accent uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
                   {stats.shippedOrders} shipped
-                </span>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Products */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-body text-muted font-normal">
-              Products
-            </CardTitle>
-            <Package size={18} className="text-muted" />
-          </CardHeader>
-          <CardContent>
-            <p className="font-display text-2xl text-foreground">{stats.totalProducts}</p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-muted">{stats.activeProducts} active</span>
-              {stats.lowStockProducts > 0 && (
-                <span className="flex items-center gap-1 text-xs text-amber-600">
-                  <AlertTriangle size={11} />
-                  {stats.lowStockProducts} low stock
                 </span>
               )}
             </div>
