@@ -1,4 +1,4 @@
-name = "jewelry-store"
+name = "jewelery-store"
 compatibility_date = "2026-05-15"
 compatibility_flags = ["nodejs_compat"]
 main = ".open-next/worker.js"
