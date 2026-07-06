@@ -23,9 +23,10 @@ services:
 Your job: create these accounts and copy a few "keys" (think of them as
 passwords that let our website talk to Shopify) and send them to the developer.
 
-> 💡 **One thing you'll need from the developer:** in the Webhooks step (A6),
-> you'll be asked to paste a web link. **Ask the developer for that link** before
-> you start — it looks like `https://something.../api/shopify/webhook`.
+> 💡 **The web link for the Webhooks step (A6) is:**
+> **`https://ezmayjewels.com/api/shopify/webhook`**
+> Use this exact link for all five webhooks. (It's already live — nothing more
+> to ask the developer for.)
 
 ---
 
@@ -105,14 +106,13 @@ handle payments on their own secure page. ✅ Just confirm it's connected.
 
 ### A6. Set up order notifications ("Webhooks")
 
-This tells our website whenever a new order comes in. **You'll need the web link
-from the developer for this step** (see the note at the top).
+This tells our website whenever a new order comes in.
 
 1. Go to **Settings** → **Notifications** → scroll down to **Webhooks**.
 2. Click **Create webhook**. For each one below:
    - **Event:** choose the event from the list
    - **Format:** JSON
-   - **URL:** paste the link the developer gave you (the same link for all of them)
+   - **URL:** `https://ezmayjewels.com/api/shopify/webhook` (the same link for all five)
 3. Create **five** webhooks, one for each of these events:
    - Order creation
    - Order payment
