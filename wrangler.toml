@@ -10,6 +10,8 @@ binding = "ASSETS"
 [vars]
 ADMIN_EMAIL = "gurleenchadha1@gmail.com"
 FROM_EMAIL = "onboarding@resend.dev"
+# Public site URL — used by auth, sitemap, robots, and canonical/OG tags.
+NEXTAUTH_URL = "https://ezmayjewels.com"
 
 # --- Storefront / India config (non-sensitive; safe to commit) ---
 # Shopify Storefront API
@@ -21,11 +23,13 @@ NEXT_PUBLIC_GST_RATE = "0.03"
 SHIPROCKET_PICKUP_PINCODE = "110001"
 
 # --- SECRETS: do NOT put these here. Set with `wrangler secret put <NAME>` ---
+#   AUTH_SECRET                    NextAuth session signing key (random 32+ bytes)
+#   ADMIN_PASSWORD_HASH            bcrypt hash of the admin login password
+#   RESEND_API_KEY                 transactional email
 #   SHOPIFY_STOREFRONT_API_TOKEN   Storefront API public access token
 #   SHOPIFY_WEBHOOK_SECRET         Shopify webhook signing secret (API secret key)
 #   SHIPROCKET_EMAIL               Shiprocket API user email
 #   SHIPROCKET_PASSWORD            Shiprocket API user password
-#   RESEND_API_KEY                 (existing) transactional email
 
 [[d1_databases]]
 binding = "DB"
